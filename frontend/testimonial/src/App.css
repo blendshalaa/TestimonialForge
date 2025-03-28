@@ -1,42 +1,99 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+select, button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-.card {
-  padding: 2em;
+button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    transition: all 0.2s;
 }
 
-.read-the-docs {
-  color: #888;
+button:hover {
+    background: #2563eb;
+}
+
+button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.result-box {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.regenerate-btn, .copy-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.regenerate-btn {
+    background: #f59e0b;
+}
+
+.regenerate-btn:hover {
+    background: #d97706;
+}
+
+.copy-btn {
+    background: #10b981;
+}
+
+.copy-btn:hover {
+    background: #059669;
+}
+
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.ai-badge {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
 }
