@@ -8,9 +8,10 @@ export default function App() {
     const [input, setInput] = useState('');
     const [tone, setTone] = useState('professional');
     const [results, setResults] = useState([]);
+    const [isBulkMode, setIsBulkMode] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const generateTestimonial = async (regenerateIndex = null) => {
+    const generate = async () => {
         if (!input.trim()) {
             toast.error('Please enter feedback');
             return;
@@ -18,23 +19,21 @@ export default function App() {
 
         setIsLoading(true);
         try {
-            const { data } = await axios.post('/api/generate', {
-                text: regenerateIndex !== null ? input : input,
-                tone
-            });
+            const endpoint = isBulkMode ? '/api/bulk-generate' : '/api/generate';
+            const payload = isBulkMode
+                ? { texts: input.split('\n').filter(t => t.trim()), tone }
+                : { text: input, tone };
 
-            if (regenerateIndex !== null) {
-                // Replace specific testimonial
-                setResults(results.map((r, i) =>
-                    i === regenerateIndex ? data.testimonial : r
-                ));
-                toast.success('Testimonial regenerated!');
+            const { data } = await axios.post(endpoint, payload);
+
+            if (isBulkMode) {
+                setResults(data.testimonials);
+                toast.success(`Generated ${data.testimonials.length} testimonials`);
             } else {
-                // Add new testimonial
-                setResults([...results, data.testimonial]);
+                setResults([data.testimonial]);
             }
-        } catch (err) {
-            toast.error(err.response?.data?.error || 'Generation failed');
+        } catch (error) {
+            toast.error(error.response?.data?.error || 'Generation failed');
         } finally {
             setIsLoading(false);
         }
@@ -45,67 +44,74 @@ export default function App() {
             <ToastContainer position="bottom-right" />
             <h1>AI Testimonial Generator</h1>
 
+            {/* Bulk Mode Toggle */}
+            <div className="mode-toggle">
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={isBulkMode}
+                        onChange={() => {
+                            setIsBulkMode(!isBulkMode);
+                            setResults([]);
+                        }}
+                    />
+                    Bulk Mode (One input per line)
+                </label>
+            </div>
+
+            {/* Input Area */}
             <div className="input-section">
         <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste raw feedback..."
-            rows={5}
+            placeholder={
+                isBulkMode
+                    ? "Paste multiple testimonials (one per line)"
+                    : "Paste raw feedback..."
+            }
+            rows={isBulkMode ? 8 : 4}
         />
 
-                <div className="controls">
-                    <select
-                        value={tone}
-                        onChange={(e) => setTone(e.target.value)}
-                        disabled={isLoading}
-                    >
-                        <option value="professional">Professional</option>
-                        <option value="friendly">Friendly</option>
-                        <option value="enthusiastic">Enthusiastic</option>
-                    </select>
+                {/* Tone Selection */}
+                <select
+                    value={tone}
+                    onChange={(e) => setTone(e.target.value)}
+                    disabled={isLoading}
+                >
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="enthusiastic">Enthusiastic</option>
+                </select>
 
-                    <button
-                        onClick={() => generateTestimonial()}
-                        disabled={isLoading}
-                        className={isLoading ? 'loading' : ''}
-                    >
-                        {isLoading ? (
-                            <>
-                                <span className="spinner"></span>
-                                Generating...
-                            </>
-                        ) : 'Generate'}
-                    </button>
-                </div>
+                <button onClick={generate} disabled={isLoading}>
+                    {isLoading ? 'Generating...' : 'Generate'}
+                </button>
             </div>
 
-            {results.length > 0 && (
-                <div className="results-section">
-                    <h2>Generated Testimonials</h2>
-                    {results.map((result, index) => (
-                        <div key={index} className="result-card">
-                            <p>{result}</p>
-                            <div className="result-actions">
-                                <button
-                                    onClick={() => generateTestimonial(index)}
-                                    className="regenerate-btn"
-                                >
-                                    🔄 Regenerate
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(result);
-                                        toast.success('Copied to clipboard!');
-                                    }}
-                                    className="copy-btn"
-                                >
-                                    📋 Copy
-                                </button>
-                            </div>
+            {/* Results */}
+            <div className="results-section">
+                {results.map((result, index) => (
+                    <div key={index} className="result-card">
+                        <p>{result}</p>
+                        <div className="result-actions">
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(result);
+                                    toast.success('Copied!');
+                                }}
+                            >
+                                Copy
+                            </button>
+                            <button
+                                onClick={generate}
+                                disabled={isLoading}
+                            >
+                                Regenerate All
+                            </button>
                         </div>
-                    ))}
-                </div>
-            )}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
