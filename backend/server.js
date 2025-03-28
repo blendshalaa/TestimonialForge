@@ -3,72 +3,88 @@ const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 
-// Validate environment variables
-if (!process.env.TOGETHER_API_KEY) {
-    console.error('Missing TOGETHER_API_KEY in environment variables');
-    process.exit(1);
-}
-
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Optimized testimonial generation
+// Predefined tones + custom tone storage
+const tonePresets = {
+    professional: "Use formal business language with industry terminology",
+    friendly: "Conversational tone with warmth and approachability",
+    enthusiastic: "Excited and energetic with positive adjectives",
+};
+
+// Enhanced generation function
+const generateTestimonial = async (text, tone) => {
+    const toneInstructions = tonePresets[tone] || tone; // Allow custom tones
+
+    const prompt = `Transform this raw feedback into a ${tone} testimonial for a SaaS landing page. Follow these rules:
+- Only return the testimonial text
+- No introductory phrases like "Here is..."
+- No explanatory notes
+- Sound natural and human
+- Length: 1-2 sentences
+
+Input: "${text}"
+Output:`;
+    const response = await axios.post(
+        'https://api.together.xyz/v1/chat/completions',
+        {
+            model: "meta-llama/Llama-3-70b-chat-hf",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 100,
+            temperature: 0.7,
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`
+            },
+            timeout: 10000
+        }
+    );
+    let result = response.data.choices[0].message.content
+        // Remove AI commentary patterns
+        .replace(/^(Here is|Testimonial:|Note:|Possible testimonial:).*/i, '')
+        // Remove everything after "Note:" if it slips through
+        .replace(/\nNote:.*/s, '')
+        .trim();
+
+    return response.data.choices[0].message.content
+        .replace(/^["']|["']$/g, '')
+        .trim();
+};
+
+// Single testimonial endpoint
 app.post('/api/generate', async (req, res) => {
     try {
         const { text, tone = 'professional' } = req.body;
+        if (!text) return res.status(400).json({ error: "Text required" });
 
-        if (!text?.trim()) {
-            return res.status(400).json({ error: "Text is required" });
-        }
-
-        const prompt = `Transform this into a ${tone} testimonial for a SaaS product.
-Be concise (1-2 sentences), highlight benefits, and sound human.
-Do NOT include labels like "Testimonial:" or quotation marks.
-
-Feedback: "${text}"
-Output:`;
-
-        const response = await axios.post(
-            'https://api.together.xyz/v1/chat/completions',
-            {
-                model: "meta-llama/Llama-3-70b-chat-hf",
-                messages: [{ role: "user", content: prompt }],
-                max_tokens: 100,
-                temperature: 0.7,
-                stop: ["\n\n"]
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                timeout: 10000
-            }
-        );
-
-        // Clean and format the output
-        let testimonial = response.data.choices[0]?.message?.content
-            .replace(/^["']|["']$/g, '')
-            .replace(/^(Here is|Testimonial:)/i, '')
-            .trim();
-
-        testimonial = testimonial.charAt(0).toUpperCase() + testimonial.slice(1);
-
+        const testimonial = await generateTestimonial(text, tone);
         res.json({ testimonial });
-
     } catch (error) {
-        console.error('API Error:', error.response?.data || error.message);
-        res.status(500).json({
-            error: error.response?.data?.error?.message ||
-                "Generation failed. Please try again."
-        });
+        console.error(error);
+        res.status(500).json({ error: "Generation failed" });
     }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Bulk processing endpoint
+app.post('/api/bulk-generate', async (req, res) => {
+    try {
+        const { texts, tone = 'professional' } = req.body;
+        if (!texts?.length) return res.status(400).json({ error: "Texts array required" });
+
+        const testimonials = await Promise.all(
+            texts.map(text => generateTestimonial(text, tone))
+        );
+
+        res.json({ testimonials });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Bulk generation failed" });
+    }
+});
+
+app.listen(process.env.PORT || 5000, () => {
+    console.log(`Server running on port ${process.env.PORT || 5000}`);
 });
