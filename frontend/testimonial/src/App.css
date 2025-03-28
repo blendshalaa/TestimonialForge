@@ -1,81 +1,178 @@
+/* Base Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9fafb;
+    margin: 0;
+    padding: 0;
+}
+
 .app-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 1rem;
+}
+
+h1 {
+    color: #1f2937;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* Input Section */
+.input-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
 }
 
 textarea {
     width: 100%;
     padding: 1rem;
-    border: 2px solid #ddd;
+    border: 2px solid #e5e7eb;
     border-radius: 8px;
     font-size: 1rem;
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.2s;
 }
 
-.controls {
+textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Mode Toggle */
+.mode-toggle {
     display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
 }
 
-select, button {
-    padding: 0.75rem 1.5rem;
+.mode-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.mode-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+}
+
+/* Tone Controls */
+.tone-controls {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    flex-wrap: wrap;
+}
+
+.tone-controls select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
     border-radius: 8px;
     font-size: 1rem;
-    cursor: pointer;
+    background-color: white;
 }
 
+.custom-tone-input {
+    flex: 2;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.custom-tone-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Buttons */
 button {
-    background: #3b82f6;
+    background-color: #3b82f6;
     color: white;
     border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
     transition: all 0.2s;
+    width: 100%;
 }
 
 button:hover {
-    background: #2563eb;
+    background-color: #2563eb;
 }
 
 button:disabled {
-    background: #9ca3af;
+    background-color: #9ca3af;
     cursor: not-allowed;
 }
 
-.result-box {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1.5rem;
-    position: relative;
+/* Results Section */
+.results-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.action-buttons {
+.result-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-left: 4px solid #3b82f6;
+}
+
+.result-card p {
+    margin: 0 0 1rem 0;
+    white-space: pre-wrap;
+}
+
+.result-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: 1rem;
+    justify-content: flex-end;
 }
 
-.regenerate-btn, .copy-btn {
+.result-actions button {
+    width: auto;
     padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
-.regenerate-btn {
-    background: #f59e0b;
+.result-actions button:nth-child(1) {
+    background-color: #f59e0b;
 }
 
-.regenerate-btn:hover {
-    background: #d97706;
+.result-actions button:nth-child(1):hover {
+    background-color: #d97706;
 }
 
-.copy-btn {
-    background: #10b981;
+.result-actions button:nth-child(2) {
+    background-color: #10b981;
 }
 
-.copy-btn:hover {
-    background: #059669;
+.result-actions button:nth-child(2):hover {
+    background-color: #059669;
 }
 
+/* Loading State */
 .spinner {
     display: inline-block;
     width: 1rem;
@@ -85,15 +182,84 @@ button:disabled {
     border-top-color: white;
     animation: spin 1s linear infinite;
     margin-right: 0.5rem;
+    vertical-align: middle;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
+/* Responsive */
+@media (max-width: 640px) {
+    .app-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .tone-controls {
+        flex-direction: column;
+    }
+
+    .tone-controls select,
+    .custom-tone-input {
+        width: 100%;
+    }
+}
+
+/* Badge */
 .ai-badge {
-    margin-top: 2rem;
     text-align: center;
-    font-size: 0.9rem;
-    color: #64748b;
+    margin-top: 3rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.ai-badge a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.ai-badge a:hover {
+    text-decoration: underline;
+}
+
+/* Toast Notifications */
+.Toastify__toast {
+    border-radius: 8px !important;
+    font-family: inherit !important;
+}
+
+.Toastify__toast--success {
+    background: #10b981 !important;
+}
+
+.Toastify__toast--error {
+    background: #ef4444 !important;
+}
+
+.Toastify__toast--info {
+    background: #3b82f6 !important;
+}
+
+.result-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.regenerate-btn {
+    background: #f59e0b;
+    padding: 0.5rem 1rem;
+}
+
+.regenerate-btn:hover {
+    background: #d97706;
+}
+
+.copy-btn {
+    background: #10b981;
+    padding: 0.5rem 1rem;
+}
+
+.copy-btn:hover {
+    background: #059669;
 }

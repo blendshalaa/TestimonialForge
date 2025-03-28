@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,16 +7,10 @@ import './App.css';
 export default function App() {
     const [input, setInput] = useState('');
     const [tone, setTone] = useState('professional');
-    const [result, setResult] = useState('');
+    const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Load saved testimonial on startup
-    useEffect(() => {
-        const saved = localStorage.getItem('lastTestimonial');
-        if (saved) setResult(saved);
-    }, []);
-
-    const generateTestimonial = async () => {
+    const generateTestimonial = async (regenerateIndex = null) => {
         if (!input.trim()) {
             toast.error('Please enter feedback');
             return;
@@ -25,16 +19,21 @@ export default function App() {
         setIsLoading(true);
         try {
             const { data } = await axios.post('/api/generate', {
-                text: input,
+                text: regenerateIndex !== null ? input : input,
                 tone
             });
 
-            setResult(data.testimonial);
-            localStorage.setItem('lastTestimonial', data.testimonial);
-            toast.success('Generated!');
-
+            if (regenerateIndex !== null) {
+                // Replace specific testimonial
+                setResults(results.map((r, i) =>
+                    i === regenerateIndex ? data.testimonial : r
+                ));
+                toast.success('Testimonial regenerated!');
+            } else {
+                // Add new testimonial
+                setResults([...results, data.testimonial]);
+            }
         } catch (err) {
-            console.error(err);
             toast.error(err.response?.data?.error || 'Generation failed');
         } finally {
             setIsLoading(false);
@@ -50,7 +49,7 @@ export default function App() {
         <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste raw customer feedback..."
+            placeholder="Paste raw feedback..."
             rows={5}
         />
 
@@ -66,7 +65,7 @@ export default function App() {
                     </select>
 
                     <button
-                        onClick={generateTestimonial}
+                        onClick={() => generateTestimonial()}
                         disabled={isLoading}
                         className={isLoading ? 'loading' : ''}
                     >
@@ -80,33 +79,33 @@ export default function App() {
                 </div>
             </div>
 
-            {result && (
-                <div className="result-section">
-                    <h2>Your Polished Testimonial:</h2>
-                    <div className="result-box">
-                        <p>{result}</p>
-                        <div className="action-buttons">
-                            <button
-                                onClick={generateTestimonial}
-                                className="regenerate-btn"
-                            >
-                                🔄 Regenerate
-                            </button>
-                            <button
-                                onClick={() => {
-                                    navigator.clipboard.writeText(result);
-                                    toast.info('Copied!');
-                                }}
-                                className="copy-btn"
-                            >
-                                📋 Copy
-                            </button>
+            {results.length > 0 && (
+                <div className="results-section">
+                    <h2>Generated Testimonials</h2>
+                    {results.map((result, index) => (
+                        <div key={index} className="result-card">
+                            <p>{result}</p>
+                            <div className="result-actions">
+                                <button
+                                    onClick={() => generateTestimonial(index)}
+                                    className="regenerate-btn"
+                                >
+                                    🔄 Regenerate
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(result);
+                                        toast.success('Copied to clipboard!');
+                                    }}
+                                    className="copy-btn"
+                                >
+                                    📋 Copy
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             )}
-
-
         </div>
     );
 }
