@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "AI Testimonial Generator",
+  "version": "1.0",
+  "action": {
+    "default_popup": "popup/index.html"
+  },
+  "permissions": ["clipboardWrite", "downloads","storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["https://api.together.xyz/*"]
+}

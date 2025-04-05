@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testimonial Generator</title>
+    <link rel="stylesheet" href="/popup/styles.css">
+</head>
+<body>
+<div class="app-container">
+    <h1>AI Testimonial Generator</h1>
+
+    <!-- Bulk Mode Toggle -->
+    <div class="mode-toggle">
+        <label>
+            <input type="checkbox" id="bulkToggle">
+            Bulk Mode (One input per line)
+        </label>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-section">
+        <textarea id="input" placeholder="Paste feedback..."></textarea>
+
+        <div class="controls-grid">
+            <select id="tone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="enthusiastic">Enthusiastic</option>
+            </select>
+
+            <select id="template">
+                <option value="minimalist">Minimalist</option>
+                <option value="elegant">Elegant</option>
+                <option value="modern">Modern</option>
+            </select>
+
+            <button id="generate">Generate</button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="results"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
