@@ -42,7 +42,9 @@ export default function App() {
 
         setIsLoading(true);
         try {
-            const endpoint = isBulkMode ? '/api/bulk-generate' : '/api/generate';
+            const endpoint = isBulkMode
+                ? 'https://testimonialforge-production.up.railway.app/api/bulk-generate'
+                : 'https://testimonialforge-production.up.railway.app/api/generate';
             const payload = isBulkMode
                 ? { texts: input.split('\n').filter(t => t.trim()), tone }
                 : { text: input, tone };
@@ -101,7 +103,6 @@ export default function App() {
             <ToastContainer position="bottom-right" />
             <h1>AI Testimonial Generator</h1>
 
-            {/* Bulk Mode Toggle */}
             <div className="mode-toggle">
                 <label>
                     <input
@@ -116,7 +117,6 @@ export default function App() {
                 </label>
             </div>
 
-            {/* Input Area */}
             <div className="input-section">
                 <textarea
                     value={input}
@@ -130,7 +130,6 @@ export default function App() {
                 />
 
                 <div className="controls-grid">
-                    {/* Tone Selection */}
                     <select
                         value={tone}
                         onChange={(e) => setTone(e.target.value)}
@@ -141,7 +140,6 @@ export default function App() {
                         <option value="enthusiastic">Enthusiastic</option>
                     </select>
 
-                    {/* Template Selection */}
                     <select
                         value={selectedTemplate}
                         onChange={(e) => setSelectedTemplate(e.target.value)}
@@ -162,7 +160,6 @@ export default function App() {
                 </div>
             </div>
 
-            {/* Results */}
             <div className="results-section">
                 {results.map((result, index) => (
                     <div key={index} className="result-container">
