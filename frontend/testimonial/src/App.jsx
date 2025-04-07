@@ -95,13 +95,13 @@ export default function App() {
         </div>`;
 
         navigator.clipboard.writeText(html);
-        toast.success('Embed code copied!');
+        toast.success('Embed code copied !');
     };
 
     return (
         <div className="app-container">
             <ToastContainer position="bottom-right" />
-            <h1>AI Testimonial Generator</h1>
+            <h1> Testimonial Generator</h1>
 
             <div className="mode-toggle">
                 <label>
