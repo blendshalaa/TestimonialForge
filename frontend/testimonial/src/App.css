@@ -321,3 +321,51 @@ input:checked + .slider:before {
     gap: 0.5rem;
     margin-top: 1rem;
 }
+
+/* ===== Extension Install Button Styles ===== */
+.extension-badge {
+    margin: 1rem 0 1.5rem;
+    text-align: center;
+}
+
+.install-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.install-button:hover {
+    background: #3367D6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.install-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.install-button img {
+    height: 16px;
+    width: 16px;
+}
+
+/* For dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+    .install-button {
+        background: #1a73e8;
+    }
+    .install-button:hover {
+        background: #185abc;
+    }
+}

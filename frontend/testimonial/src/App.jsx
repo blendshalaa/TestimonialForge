@@ -5,6 +5,7 @@ import { toPng } from 'html-to-image';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
+
 export default function App() {
     const [input, setInput] = useState('');
     const [tone, setTone] = useState('professional');
@@ -101,7 +102,21 @@ export default function App() {
     return (
         <div className="app-container">
             <ToastContainer position="bottom-right" />
-            <h1> Testimonial Generator</h1>
+            <h1>Testimonial Generator</h1>
+
+            {/* New Chrome Extension Badge */}
+            <div className="extension-badge">
+                <a
+                    href="https://chrome.google.com/webstore/detail/anieddnefgkeakadpdgnbminaaaimimi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <button className="install-button">
+
+                        Install Chrome Extension
+                    </button>
+                </a>
+            </div>
 
             <div className="mode-toggle">
                 <label>
